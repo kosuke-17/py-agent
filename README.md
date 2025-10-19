@@ -1,5 +1,7 @@
 # py-agent
 
+@see: https://zenn.dev/umi_mori/books/prompt-engineer/viewer/langchain_overview
+
 uv init # pyproject.toml 等を作成（既存 repo でも OK）
 uv python pin 3.12 # ← この repo は 3.12 系に固定したい、など
 uv python install 3.12 ← 必要なら Python を入れる
