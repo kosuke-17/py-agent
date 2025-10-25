@@ -4,6 +4,7 @@ from langchain_text_splitters import (
   Language
 )
 import os
+from langchain_openai import OpenAIEmbeddings
 
 text  = """
 # EC2 (Amazon Linux 2023) から CloudWatch にアクセスログを送る手頛今残"": **EC2 のアクセスログを CloudWatch に送信する**
@@ -30,11 +31,22 @@ def main():
     # print(chunks)
 
     # mdファイルを読み込んで出力その2
-    loader = TextLoader("./vector_paython/2025-9-3-ec2-access-logs-to-cloudwatch.md")
-    docs = loader.load()
-    chunks = md_splitter.split_documents(docs)
-    print(chunks)
-    
+    # loader = TextLoader("./vector_paython/2025-9-3-ec2-access-logs-to-cloudwatch.md")
+    # docs = loader.load()
+    # chunks = md_splitter.split_documents(docs)
+    # print(chunks)
+
+    # md_doc(list[Document])を作成
+    # loader = TextLoader("./vector_paython/2025-9-3-ec2-access-logs-to-cloudwatch.md")
+    # docs = loader.load()
+    # docs_string = [doc.page_content for doc in docs]
+    # md_doc = md_splitter.create_documents(docs_string, metadatas=[{"source": "2025-9-3-ec2-access-logs-to-cloudwatch.md"}])
+    # print(md_doc)
+
+    embeddings = OpenAIEmbeddings(model="gpt-4o-mini")
+    embeddings.embed_query(text)
+    print(embeddings)
+
 
 if __name__ == "__main__":
     main()
