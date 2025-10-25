@@ -1,0 +1,40 @@
+from langchain_community.document_loaders import TextLoader
+from langchain_text_splitters import (
+  RecursiveCharacterTextSplitter,
+  Language
+)
+import os
+
+text  = """
+# EC2 (Amazon Linux 2023) から CloudWatch にアクセスログを送る手頛今残"": **EC2 のアクセスログを CloudWatch に送信する**
+目的: **EC2 のアクセスログを CloudWatch に送信する**
+,2025-9-3-ec2-access-logs-to-cloudwatch.md")
+# ログ送信権限を付与（IAM ロー角を SSH 接続」- 作成した `.pem` キーを用いて接続
+"""
+
+md_splitter = RecursiveCharacterTextSplitter.from_language(
+  language=Language.MARKDOWN, chunk_size=60, chunk_overlap=0
+  )
+
+def main():
+    # textを読み込んで出力
+    # md_docs = md_splitter.split_text(text)
+    # print(md_docs)
+
+    # mdファイルを読み込んで出力その1
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # print(script_dir)
+    # file_path = os.path.join(script_dir, "2025-9-3-ec2-access-logs-to-cloudwatch.md")
+    # loader = TextLoader(file_path)
+    # chunks = md_splitter.split_documents(docs)
+    # print(chunks)
+
+    # mdファイルを読み込んで出力その2
+    loader = TextLoader("./vector_paython/2025-9-3-ec2-access-logs-to-cloudwatch.md")
+    docs = loader.load()
+    chunks = md_splitter.split_documents(docs)
+    print(chunks)
+    
+
+if __name__ == "__main__":
+    main()
