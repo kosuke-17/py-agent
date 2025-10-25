@@ -5,6 +5,9 @@ from langchain_text_splitters import (
 )
 import os
 from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 text  = """
 # EC2 (Amazon Linux 2023) から CloudWatch にアクセスログを送る手頛今残"": **EC2 のアクセスログを CloudWatch に送信する**
@@ -43,9 +46,9 @@ def main():
     # md_doc = md_splitter.create_documents(docs_string, metadatas=[{"source": "2025-9-3-ec2-access-logs-to-cloudwatch.md"}])
     # print(md_doc)
 
-    embeddings = OpenAIEmbeddings(model="gpt-4o-mini")
-    embeddings.embed_query(text)
-    print(embeddings)
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.getenv("OPENAI_API_KEY"))
+    embedding = embeddings.embed_query(text)
+    print(embedding)
 
 
 if __name__ == "__main__":
