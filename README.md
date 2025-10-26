@@ -51,3 +51,36 @@ Astral Docs
 uvx はツールをインストール不要で即時実行（uv tool run のエイリアス）。
 Astral Docs
 +1
+
+## 1. Docker コンテナが実行中か確認
+
+docker ps | grep pgvector
+
+## 2. コンテナの詳細情報を確認
+
+docker inspect pgvector-db
+
+## 3. コンテナのログを確認
+
+docker logs pgvector-db
+
+## 4. ポート マッピングの確認（-p で表示される）
+
+docker port pgvector-db
+
+## 5. コンテナ内から直接接続してみる
+
+docker exec -it pgvector-db psql -U langchain -d langchain
+
+## 6.テーブルを確認
+
+```sql
+SELECT
+column_name,
+data_type,
+is_nullable,
+column_default
+FROM information_schema.columns
+WHERE table_name = 'langchain_pg_embedding'
+ORDER BY ordinal_position;
+```

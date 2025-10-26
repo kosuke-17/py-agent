@@ -7,6 +7,7 @@ import os
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 from .text_load_split_and_embed import main as text_load_split_and_embed
+from .vectore_stores import main as vectore_stores_main
 
 load_dotenv()
 
@@ -54,7 +55,8 @@ def main():
     # embedding = model.embed_documents(["こんにちは。", "こんにちは、今日はいい天気ですね。", "ですね。明日もいい天気になるみたいですよ。"])
     # print(embedding)
 
-    text_load_split_and_embed()
+    # text_load_split_and_embed()
+    vectore_stores_main()
 
 if __name__ == "__main__":
     main()
