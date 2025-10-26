@@ -12,7 +12,6 @@ from langchain_core.documents import Document
 
 load_dotenv()
 
-
 md_splitter = RecursiveCharacterTextSplitter.from_language(
   language=Language.MARKDOWN, chunk_size=200, chunk_overlap=20
 )
