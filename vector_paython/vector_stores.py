@@ -15,7 +15,7 @@ load_dotenv()
 md_splitter = RecursiveCharacterTextSplitter.from_language(
   language=Language.MARKDOWN, chunk_size=200, chunk_overlap=20
 )
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 model = OpenAIEmbeddings(model="text-embedding-3-small", api_key=OPENAI_API_KEY)
 

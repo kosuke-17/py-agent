@@ -24,7 +24,7 @@ def main():
     page_contents = [chunk.page_content for chunk in chunks]
 
     ## 埋め込む
-    model = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.getenv("OPENAI_API_KEY"))
+    # model = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.getenv("OPENAI_API_KEY"))
     embed_contents = model.embed_documents(page_contents)
     print(embed_contents)
     

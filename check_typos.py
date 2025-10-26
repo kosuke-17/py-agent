@@ -6,9 +6,11 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 # モデルインスタンス作成
 # temperature=0 は確率を0に固定して、常に同じ回答を返す
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=os.getenv("OPENAI_API_KEY"))
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=OPENAI_API_KEY)
 
 # プロンプトのテンプレート文章を定義
 template = """

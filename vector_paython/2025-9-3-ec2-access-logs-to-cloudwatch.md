@@ -13,7 +13,7 @@
 
 ## 2. CloudWatch へのログ送信権限を付与（IAM ロール作成）
 
-参考: [AWS公式 Quick Start - EC2 Instance](https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/QuickStartEC2Instance.html)
+参考: [AWS 公式 Quick Start - EC2 Instance](https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/QuickStartEC2Instance.html)
 
 `policies.json` の例:
 
@@ -110,3 +110,44 @@ sudo tail -n 100 /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.l
 ---
 
 👉 この流れで EC2 の `/var/log/secure` のログが CloudWatch に送信されます。
+
+以下は、EC2 (Amazon Linux 2023) から CloudWatch にアクセスログを送信する手順の要約です。
+
+---
+
+## 目的
+
+EC2 のアクセスログを CloudWatch に送信する。
+
+## 手順
+
+### 1. EC2 の作成
+
+- セキュリティグループを作成。
+- `.pem` キーを作成し、権限を設定。
+
+### 2. IAM ロールの作成
+
+- CloudWatch へのログ送信権限を付与するためのポリシーを作成。
+- 例として、`logs:CreateLogGroup` や `logs:PutLogEvents` などの権限を含む JSON を用意。
+
+### 3. EC2 への SSH 接続
+
+- 作成した `.pem` キーを使用して接続。
+
+### 4. EC2 内での設定
+
+- **rsyslog のインストールと設定**:
+  - `rsyslog` をインストールし、設定ファイルを作成。
+- **CloudWatch Agent のインストール**:
+  - エージェントをインストールし、設定ウィザードを実行。
+  - ウィザードでは root ユーザーで操作し、監視対象にファイルを追加。
+- 設定ファイルを確認し、CloudWatch Agent を起動。
+
+### 5. 動作確認
+
+- EC2 側でログを確認し、CloudWatch 側でもロググループを確認。
+
+---
+
+この手順に従うことで、EC2 の `/var/log/secure` のログが CloudWatch に送信されるようになります。

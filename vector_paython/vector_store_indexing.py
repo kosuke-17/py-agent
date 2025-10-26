@@ -15,7 +15,7 @@ from langchain_core.indexing.base import InMemoryRecordManager
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 namespace = "my_docs_namespace"
 TABLE = "docs"
 VECTOR_SIZE = 1536 

@@ -11,7 +11,7 @@ import operator
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 # モデルのセットアップ
 tools = [TavilySearch(max_results=1)]
