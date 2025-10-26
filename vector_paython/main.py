@@ -6,6 +6,7 @@ from langchain_text_splitters import (
 import os
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
+from .text_load_split_and_embed import main as text_load_split_and_embed
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ md_splitter = RecursiveCharacterTextSplitter.from_language(
   language=Language.MARKDOWN, chunk_size=60, chunk_overlap=0
   )
 
+# @see: https://docs.langchain.com/
 def main():
     # textを読み込んで出力
     # md_docs = md_splitter.split_text(text)
@@ -46,10 +48,13 @@ def main():
     # md_doc = md_splitter.create_documents(docs_string, metadatas=[{"source": "2025-9-3-ec2-access-logs-to-cloudwatch.md"}])
     # print(md_doc)
 
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.getenv("OPENAI_API_KEY"))
-    embedding = embeddings.embed_query(text)
-    print(embedding)
+    # 複数のdocumentを埋め込む
+    # log: [[-0.0016021728515625, 0.00030517578125, 0.00030517578125, ...], [-0.0016021728515625, 0.00030517578125, 0.00030517578125, ...], [-0.0016021728515625, 0.00030517578125, 0.00030517578125, ...]]
+    # model = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.getenv("OPENAI_API_KEY"))
+    # embedding = model.embed_documents(["こんにちは。", "こんにちは、今日はいい天気ですね。", "ですね。明日もいい天気になるみたいですよ。"])
+    # print(embedding)
 
+    text_load_split_and_embed()
 
 if __name__ == "__main__":
     main()
