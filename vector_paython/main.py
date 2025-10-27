@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 # from .text_load_split_and_embed import main as text_load_split_and_embed
 # from .vectore_stores import main as vectore_stores_main
 # from .vectore_store_indexing import main as vectore_store_indexing_main
-from .summaries_documents import main as summaries_documents_main
-from .chat_with_rag_data import main as chat_with_documents_main
+# from .summaries_documents import main as summaries_documents_main
+# from .chat_with_rag_data import main as chat_with_documents_main
+from .rewrite_retrieve_read import main as rewrite_retrieve_read_main
 
 load_dotenv()
 
@@ -62,7 +63,8 @@ def main():
     # vectore_stores_main()w
     # vectore_store_indexing_main()
     # summaries_documents_main()
-    chat_with_documents_main()
+    # chat_with_documents_main()
+    rewrite_retrieve_read_main()
 
 if __name__ == "__main__":
     main()
