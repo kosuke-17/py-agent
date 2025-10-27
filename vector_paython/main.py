@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 # from .vectore_stores import main as vectore_stores_main
 # from .vectore_store_indexing import main as vectore_store_indexing_main
 from .summaries_documents import main as summaries_documents_main
+from .chat_with_rag_data import main as chat_with_documents_main
 
 load_dotenv()
 
@@ -60,7 +61,8 @@ def main():
     # text_load_split_and_embed()
     # vectore_stores_main()w
     # vectore_store_indexing_main()
-    summaries_documents_main()
+    # summaries_documents_main()
+    chat_with_documents_main()
 
 if __name__ == "__main__":
     main()
