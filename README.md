@@ -84,3 +84,13 @@ FROM information_schema.columns
 WHERE table_name = 'langchain_pg_embedding'
 ORDER BY ordinal_position;
 ```
+
+セーフガード
+
+```propmt
+作業時間が10分超える場合は作業を中断して、10分ごとのタスクに分割して、Issueとして実行するためのPromptを作成してください。
+それぞれのPromptを`work/service-implementsation-issue-prompt-<番号>.md`に日本語で追記してください。
+```
+
+日本語ではなく英語で行う方が正確に動く
+プロンプトは選択する。ただプロンプトを投げないで影響範囲を絞り込む

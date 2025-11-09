@@ -14,6 +14,7 @@ dependencies = [
     "langgraph>=1.0.0",
     "openai>=2.5.0",
     "python-dotenv>=1.1.1",
+    "qdrant-client>=1.15.1",
     "ruff>=0.14.1",
 ]
 
