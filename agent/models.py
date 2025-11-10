@@ -43,3 +43,7 @@ class Subtask(BaseModel):
   is_completed: bool = Field(..., description="サブタスクが完了しているかどうか")
   subtask_answer: str = Field(..., description="サブタスクの回答")
   challenge_count: int = Field(..., description="サブタスクの挑戦回数")
+
+class Plan(BaseModel):
+  subtasks: list[str] = Field(..., description="問題を解決するためのサブタスクリスト")
+  
