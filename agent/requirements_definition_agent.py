@@ -1,6 +1,7 @@
 import operator
 from typing import Annotated, Literal, Sequence, TypedDict
 # from langchain_core.utils.function_calling import convert_to_openai_tool_calls
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.graph import START, END, StateGraph
 # from langgraph.constants import Send
 from openai import OpenAI
@@ -107,51 +108,111 @@ class ReqDefAgent:
     pass
 
   # 生成された計画数分だけサブグラフを実行することが可能
-  # def _should_continue_exec_subtasks(self, state: AgentState) -> list:
-  #   return [
-  #     Send(
-  #       "execute_subtasks",
-  #       {
-  #         "question": state["question"],
-  #         "plan": state["plan"],
-  #         "current_step": idx
-  #       }
-  #     )
-  #     for idx, _ in enumerate(state["plan"])
-  #   ]
+  def _should_continue_exec_subtasks(self, state: AgentState) -> list:
+    return [
+      Send(
+        "execute_subtasks",
+        {
+          "question": state["question"],
+          "plan": state["plan"],
+          "current_step": idx
+        }
+      )
+      for idx, _ in enumerate(state["plan"])
+    ]
 
-  # def _create_subgraph(self) -> Pregel:
-  #   """
-  #   サブグラフを作成
+  def _create_subgraph(self) -> Pregel:
+    """
+    サブグラフを作成
 
-  #   Returns:
-  #     Pregel: サブグラフ
-  #   """
-  #   workflow = StateGraph(AgentSubGraphState)
+    Returns:
+      Pregel: サブグラフ
+    """
+    workflow = StateGraph(AgentSubGraphState)
 
-  #   workflow.add_node("select_tools", self.select_tools)
-  #   workflow.add_node("execute_tools", self.execute_tools)
-  #   workflow.add_node("create_subtask_andwer", self.create_subtask_answer)
-  #   workflow.add_node("reflect_subtask", self.reflect_subtask)
+    workflow.add_node("select_tools", self.select_tools)
+    workflow.add_node("execute_tools", self.execute_tools)
+    workflow.add_node("create_subtask_andwer", self.create_subtask_answer)
+    workflow.add_node("reflect_subtask", self.reflect_subtask)
 
-  #   workflow.add_edge(START, "select_tools")
-  #   workflow.add_edge("select_tools", "execute_tools")
-  #   workflow.add_edge("execute_tools", "create_subtask_answer")
-  #   workflow.add_edge("create_subtask_answer", "reflect_subtask")
+    workflow.add_edge(START, "select_tools")
+    workflow.add_edge("select_tools", "execute_tools")
+    workflow.add_edge("execute_tools", "create_subtask_answer")
+    workflow.add_edge("create_subtask_answer", "reflect_subtask")
 
-  #   workflow.add_conditional_edges(
-  #     "reflect_subtask",
-  #     self._should_continue_exec_subtask_flow,
-  #     {"continue": "select_tools", "end": END}
-  #   )
+    workflow.add_conditional_edges(
+      "reflect_subtask",
+      self._should_continue_exec_subtask_flow,
+      {"continue": "select_tools", "end": END}
+    )
 
-  #   app = workflow.complie()
-  #   return app
+    app = workflow.complie()
+    return app
 
-  # def _should_continue_exec_subtask_flow(
-  #     self, state: AgentSubGraphState
-  #   ) -> Literal["end", "continue"]:
-  #   if state["is_completed"] or state["challenge_count"] >= MAX_CHALLENGE_COUNT:
-  #     return "end"
-  #   else:
-  #     return "continue"
+  def _should_continue_exec_subtask_flow(
+      self, state: AgentSubGraphState
+    ) -> Literal["end", "continue"]:
+    if state["is_completed"] or state["challenge_count"] >= MAX_CHALLENGE_COUNT:
+      return "end"
+    else:
+      return "continue"
+
+  def select_tools(self, state: AgentSubGraphState) -> dict:
+    """ツールを選択する"""
+    print("ツール選択プロセス開始🚀")
+    # OpenAI対応のtool定義に書き換える
+    openai_tools = [convert_to_openai_tool(tool) for tool in self.tools]
+
+    # リトライされたかどうかでプロンプトを変える
+    if state["challenge_count"] == 0:
+      print("tool洗濯のためのユーザープロンプトを作成中...")
+      user_prompt = self.prompts.subtask_tool_selection_user_prompt.format(
+        question=state["question"],
+        plan=state["plan"],
+        subtask=state["subtask"],
+      )
+      messages = [
+        { "role": "system", "content": self.prompts.subtask_system_prompt },
+        { "role": "user", "content": user_prompt}
+      ]
+    else:
+      print("リトライツール作成用のユーザープロンプトを作成中...")
+
+      messages: list = state["messages"]
+      messages = [
+        message
+        for message in messages
+        if message["role"] != "tool" or "tool_calls" not in message
+      ]
+      user_retry_prompt = self.prompts.subtask_retry_answer_user_prompt
+      user_message = {"role": "user", "content": user_retry_prompt}
+      messages.append(user_message)
+
+      try:
+        print("OpenAIにリクエストを送信中...")
+        response = self.client.chat.completions.create(
+          model=self.settings.openai_model,
+          messages=messages,
+          tools=openai_tools,
+          temperature=0,
+          seed=0
+        )
+        print("成功✅")
+      except Exception as e:
+        print(f"エラー発生:{e}")
+        raise
+
+      if response.choices[0].message.tool_calls is None:
+        raise ValueError("Tool Callsがありません")
+
+      ai_message = {
+        "role": "assistant",
+        "tool_calls": [
+          tool_call.model_dump()
+          for tool_call in response.choices[0].message.tool_calls
+        ]
+      }
+      print("ツール選択終了!")
+      messages.append(ai_message)
+      # リトライの場合は追加分のメッセージのみを更新
+      return {"messages": messages}
