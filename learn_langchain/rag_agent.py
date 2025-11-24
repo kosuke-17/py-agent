@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import OpenAIEmbeddings
+from langchain_postgres import PGEngine, PGVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # from langchain_openai import ChatOpenAI
@@ -24,17 +25,17 @@ if not openai_api_key:
 # print(llm.invoke("こんにちはお元気ですか？"))
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-# connection_string = "postgresql+psycopg://langchain:langchain@localhost:6024/langchain"
-# engine = PGEngine.from_connection_string(connection_string)
+connection_string = "postgresql+psycopg://langchain:langchain@localhost:6024/langchain"
+engine = PGEngine.from_connection_string(connection_string)
 
 # テーブルが存在しない場合は明示的に作成
 # text-embedding-3-smallのベクトルサイズは1536
 # 初回のみ実行（2回目以降はコメントアウト可）
 # engine.init_vectorstore_table(table_name="docs", vector_size=1536)
 
-# vector_store = PGVectorStore.create_sync(
-#     engine=engine, table_name="docs", embedding_service=embeddings
-# )
+vector_store = PGVectorStore.create_sync(
+    engine=engine, table_name="docs", embedding_service=embeddings
+)
 
 # tamusite.comはNext.jsのSPAで、コンテンツがJavaScriptで動的に生成される
 # WebBaseLoaderは静的HTMLのみを取得するため、JavaScriptで生成されるコンテンツは取得できない
@@ -67,3 +68,6 @@ text_splitter = RecursiveCharacterTextSplitter(
 all_splits = text_splitter.split_documents(docs)
 
 print(f"{len(all_splits)}のサブドキュメントに分割されました。")
+
+document_ids = vector_store.add_documents(documents=all_splits)
+print(f"ドキュメントが追加されました: {document_ids}")
