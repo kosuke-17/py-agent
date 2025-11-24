@@ -5,10 +5,11 @@ https://docs.langchain.com/oss/python/langchain/rag#loading-documents
 
 import os
 
-import bs4  # フィルタリングが必要な場合はコメントアウトを解除
+# import bs4  # フィルタリングが必要な場合はコメントアウトを解除
 from dotenv import load_dotenv
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # from langchain_openai import ChatOpenAI
 
@@ -44,9 +45,7 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
 # オプション1: フィルタリングなし（全HTMLを取得）
 loader = WebBaseLoader(
-    web_paths=(
-        "https://tamusite.com/blogs/aws/2025-9-3-ec2-access-logs-to-cloudwatch.md",
-    ),
+    web_paths=("https://tamusite.com",),
 )
 
 # オプション2: セマンティックなHTMLタグでフィルタリング（記事ページの場合）
@@ -59,7 +58,12 @@ loader = WebBaseLoader(
 # )
 
 docs = loader.load()
-print("docs--------------------------------")
-print(docs)
-assert len(docs) == 1
-print(f"トータルキャラクター数: {len(docs[0].page_content)}")
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=10,
+    chunk_overlap=3,
+    add_start_index=True,
+)
+all_splits = text_splitter.split_documents(docs)
+
+print(f"{len(all_splits)}のサブドキュメントに分割されました。")
