@@ -2,8 +2,12 @@
 Semantic SearchエンジンをLangcHainで構築する.
 """
 
+import os
+
+from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
+from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 documents = [
@@ -47,3 +51,20 @@ all_splits = text_splitter.split_documents(documents)
 #     print(split)
 #     print("--------------------------------")
 # print(len(all_splits))
+
+load_dotenv()
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY is not set")
+# OpenAIEmbeddings() は引数なしで呼び出すと、環境変数 OPENAI_API_KEY を自動的に読み込む
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+
+vector_1 = embeddings.embed_query(all_splits[0].page_content)
+vector_2 = embeddings.embed_query(all_splits[0].page_content)
+print("vector_1--------------------------------")
+print(vector_1)
+print("vector_1:10--------------------------------")
+print(vector_1[:10])
+print("vector_2--------------------------------")
+print(vector_2)
