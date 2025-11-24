@@ -4,6 +4,7 @@ Semantic SearchエンジンをLangcHainで構築する.
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 documents = [
     Document(
@@ -35,3 +36,14 @@ loader = PyPDFLoader(file_path)
 docs = loader.load()
 # print("docs--------------------------------")
 # print(docs)
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=10, chunk_overlap=3, add_start_index=True
+)
+all_splits = text_splitter.split_documents(documents)
+# print("all_splits--------------------------------")
+# for split in all_splits:
+#     print("--------------------------------")
+#     print(split)
+#     print("--------------------------------")
+# print(len(all_splits))
