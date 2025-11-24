@@ -9,8 +9,10 @@ from datetime import datetime
 
 # import bs4  # フィルタリングが必要な場合はコメントアウトを解除
 from dotenv import load_dotenv
+from langchain.tools import tool
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import OpenAIEmbeddings
 from langchain_postgres import PGEngine, PGVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -23,9 +25,6 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 if not openai_api_key:
     raise ValueError("OPENAI_API_KEY is not set")
 
-# llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-
-# print(llm.invoke("こんにちはお元気ですか？"))
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 connection_string = "postgresql+psycopg://langchain:langchain@localhost:6024/langchain"
@@ -163,3 +162,36 @@ all_splits = text_splitter.split_documents(date_split_docs)
 
 # document_ids = vector_store.add_documents(documents=all_splits)
 # print(f"ドキュメントが追加されました: {document_ids}")
+
+
+@tool(response_format="content_and_artifact")
+def retrieve_context(query: str):
+    """Retrieve information to help answer a query."""
+    retrieved_docs = vector_store.similarity_search(query, k=3)
+    serialized = "\n\n".join(
+        (f"Source: {doc.metadata['source']}\n{doc.page_content}")
+        for doc in retrieved_docs
+    )
+    return serialized, retrieved_docs
+
+
+tools = [retrieve_context]
+
+prompt = ChatPromptTemplate.from_template(
+    """
+    あなたは記事タイトルデータからコンテキストを探索するツールを持っています。
+    ユーザーの回答に必要なコンテキストを探索し、ツールを実行してください。
+    記事タイトルを探そうとしないqueryは拒否してください。{query}
+    """
+)
+
+# llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+
+# def rag_agent(query: str):
+#     formatted_prompt = prompt.invoke({"query": query})
+#     response = llm.invoke(formatted_prompt)
+#     print(response)
+
+
+# rag_agent("EC2に関する記事を探してください。")
